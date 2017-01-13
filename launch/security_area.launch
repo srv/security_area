@@ -1,0 +1,15 @@
+<!-- TEST1: BAGFILE:-->
+<launch>
+    <!-- security area -->
+    
+    <node name="security_area" pkg="security_area" type="security_area" output="screen">
+    	<remap from="security_area_out" to="/stereo_down/scaled_x2/points2"/>
+        <!--remap from="security_area_out" to="/tomeu"/-->
+        <param name="radius" value="3"/>
+        <param name="increment_angle" value="10"/>
+        <param name="frame_origin" value="/map"/>
+        <param name="frame_destination" value="/usbl"/>
+    </node>
+
+
+</launch>
