@@ -20,7 +20,6 @@ int main(int argc, char** argv){
 
   int radius_, increment_;
   std::string origin_frame_id_, destination_frame_id_ , node_name_ = ros::this_node::getName();
-  //sensor_msgs::PointCloud2 area;
 
 
   ros::Publisher security_area_pub_ = nhp.advertise<PointCloud>("/security_area_out", 10); // new publisher: publish a PointCloud2 
@@ -29,7 +28,7 @@ int main(int argc, char** argv){
   nhp.param("frame_origin", origin_frame_id_, std::string("/sparus2"));
   nhp.param("frame_destination", destination_frame_id_, std::string("/odom"));
   
-  ROS_WARN_STREAM("params: " << radius_ << ", " << increment_ << ", " << destination_frame_id_ << ")");
+  ROS_WARN_STREAM("[" << node_name_ << "]" << ":params: " << radius_ << ", " << increment_ << ", " << destination_frame_id_ << ")");
 
 
   tf::TransformListener listener;
@@ -49,8 +48,7 @@ int main(int argc, char** argv){
     }
 
     /* RECUPERATE TRANSFORM DATA */
-    // origin, position of the object (usbl, G500, etc...) with respect to /map 
-
+    
     double x,y,z, thetarad, phirad, Verticex, Verticey, Verticez; 
     int theta, phi,i, sizeof_point_cloud;
     x = transform.getOrigin().x();
@@ -68,17 +66,15 @@ int main(int argc, char** argv){
 
     */ 
     i=0;
-    PointCloud::Ptr point_cloud(new PointCloud()); // create a pcl Pointcloud as defined in the typedef
+    PointCloud::Ptr point_cloud(new PointCloud()); // create a pcl Pointcloud 
     std_msgs::Header header;
     ros::Time now = ros::Time::now();
     header.stamp = now;
     header.frame_id = origin_frame_id_;
     pcl_conversions::toPCL(header, point_cloud->header);
 
-    ROS_WARN_STREAM("");
 
     sizeof_point_cloud = ((180-0)/increment_)*((360-0)/increment_);
-//    ROS_WARN_STREAM("sizeof_point_cloud: " << sizeof_point_cloud);
     point_cloud->width = sizeof_point_cloud;
     point_cloud->height = 1;
     point_cloud->points.resize(sizeof_point_cloud);
@@ -92,16 +88,9 @@ int main(int argc, char** argv){
                   Verticex= x-(radius_)*((float) sin(thetarad))*((float)cos(phirad));
                   Verticey= y+(radius_)*((float) sin(thetarad))*((float)sin(phirad));
                   Verticez= z-(radius_)*((float) cos(thetarad));
-            //      ROS_WARN_STREAM("points: " << Verticex << ", " << Verticey << ", " << Verticez);
-
-                  
-            //      ROS_WARN_STREAM("point_cloud height: " << point_cloud->height);
-            //      ROS_WARN_STREAM("point_cloud size: " << point_cloud->points.size());
-
                   point_cloud->points[i].x = Verticex;
                   point_cloud->points[i].y = Verticey;
                   point_cloud->points[i].z = Verticez;
-            //      ROS_WARN_STREAM("point_cloud point: " << point_cloud->points[i].x << ", " << point_cloud->points[i].y << ", " << point_cloud->points[i].z);
 
                   i++;
                  
@@ -111,7 +100,6 @@ int main(int argc, char** argv){
     // publish the point cloud
     security_area_pub_.publish(point_cloud);
 
-    /**/
    
     rate.sleep();
   }
