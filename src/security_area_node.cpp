@@ -15,18 +15,18 @@ typedef pcl::PointCloud<pcl::PointXYZ> PointCloud; // define a PointCloud as a p
 int main(int argc, char** argv){
   ros::init(argc, argv, "security_area");
 
-  ros::NodeHandle node; // declare new node handler
-  ros::NodeHandle nhp("~");
+  ros::NodeHandle node_; // declare new node_ handler
+  ros::NodeHandle nhp_("~");
 
   int radius_, increment_;
   std::string origin_frame_id_, destination_frame_id_ , node_name_ = ros::this_node::getName();
 
 
-  ros::Publisher security_area_pub_ = nhp.advertise<PointCloud>("/security_area_out", 10); // new publisher: publish a PointCloud2 
-  nhp.param("radius", radius_, 1); // radious of the spherical security zone
-  nhp.param("increment_angle", increment_, 1); // by defaul, the angular increment is 10º = pi/18 
-  nhp.param("frame_origin", origin_frame_id_, std::string("/sparus2"));
-  nhp.param("frame_destination", destination_frame_id_, std::string("/odom"));
+  ros::Publisher security_area_pub_ = nhp_.advertise<PointCloud>("/security_area_out", 10); // new publisher: publish a PointCloud2 
+  nhp_.param("radius", radius_, 1); // radious of the spherical security zone
+  nhp_.param("increment_angle", increment_, 1); // by defaul, the angular increment is 10º = pi/18 
+  nhp_.param("frame_origin", origin_frame_id_, std::string("/sparus2"));
+  nhp_.param("frame_destination", destination_frame_id_, std::string("/odom"));
   
   ROS_WARN_STREAM("[" << node_name_ << "]" << ":params: " << radius_ << ", " << increment_ << ", " << destination_frame_id_ << ")");
 
@@ -36,7 +36,7 @@ int main(int argc, char** argv){
   ros::Rate rate(1.0); // define the loop frequency
 
 
-  while (node.ok()){
+  while (node_.ok()){
     tf::StampedTransform transform;
     try{
       listener.lookupTransform(origin_frame_id_, destination_frame_id_,  
@@ -65,7 +65,7 @@ int main(int argc, char** argv){
             z= -rcos(theta) , where      0<theta<180º and  0 < phi < 360 º
 
     */ 
-    i=0;
+    
     PointCloud::Ptr point_cloud(new PointCloud()); // create a pcl Pointcloud 
     std_msgs::Header header;
     ros::Time now = ros::Time::now();
@@ -78,7 +78,7 @@ int main(int argc, char** argv){
     point_cloud->width = sizeof_point_cloud;
     point_cloud->height = 1;
     point_cloud->points.resize(sizeof_point_cloud);
-
+    i=0;
     for( theta = 0 ; theta < 180; theta+=increment_ )
     {
              thetarad= theta * (M_PI /180);
