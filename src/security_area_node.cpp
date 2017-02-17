@@ -57,8 +57,6 @@ class SecurityArea {
     y = transform.getOrigin().y();
     z = transform.getOrigin().z();
 
-    ROS_WARN_STREAM("USBL Origin: (" << x << ", " << y << ", " << z << ")");
-
     /* GENERATE THE SPHERICAL POINT CLOUD centred at the origin.
      * Sphere equations (NED coordinate system)
      *   x= -r * sin(theta) * cos(phi)
@@ -91,7 +89,6 @@ class SecurityArea {
         i++;
       }
     }
-    ROS_WARN_STREAM("Publishing the Sphere of Security: " << i << "points");
     // publish the point cloud
     security_area_pub_.publish(point_cloud);
   }
